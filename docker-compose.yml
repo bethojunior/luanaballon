@@ -14,7 +14,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?defina ADMIN_PASSWORD}
       AUTH_SECRET: ${AUTH_SECRET:?defina AUTH_SECRET}
     ports:
-      - "${WEB_PORT:-80}:3000"
+      - "${WEB_PORT:-8580}:8580"
     depends_on:
       mongo:
         condition: service_healthy
@@ -46,8 +46,8 @@ services:
     volumes:
       - minio_data:/bitnami/minio/data
     ports:
-      # console do MinIO apenas via localhost (acesse com túnel SSH: ssh -L 9001:localhost:9001 root@SEU_IP)
-      - "127.0.0.1:9001:9001"
+      # console do MinIO apenas via localhost (acesse com túnel SSH: ssh -L 8501:localhost:8501 root@SEU_IP)
+      - "127.0.0.1:8501:9001"
     networks: [internal]
 
 networks:

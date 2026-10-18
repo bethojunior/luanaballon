@@ -22,7 +22,7 @@ O carrinho finaliza o pedido pelo WhatsApp.
 4. Acesse `http://SEU_IP/admin` e entre com `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
 5. Em **Configurações**, informe o WhatsApp da loja (só números, com 55 + DDD) — é para lá que os pedidos vão.
 
-Firewall: libere apenas 22 e 80 (e 443 se usar HTTPS na frente) (`ufw allow 22,80,443/tcp && ufw enable`). Mongo não é exposto; o console do MinIO só em `127.0.0.1:9001` (acesse com `ssh -L 9001:localhost:9001 root@SEU_IP`).
+Firewall: libere apenas 22 e 8580 (e 443 se usar HTTPS na frente) (`ufw allow 22,8580,443/tcp && ufw enable`). Mongo não é exposto; o console do MinIO só em `127.0.0.1:8501` (acesse com `ssh -L 8501:localhost:8501 root@SEU_IP`).
 
 Atualizar: `git pull && docker compose up -d --build`
 
