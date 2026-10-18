@@ -19,7 +19,9 @@ export async function siteMetadata(): Promise<Metadata> {
     title: { default: s.seoTitle, template: `%s | ${s.storeName}` },
     description: s.seoDescription,
     keywords: s.seoKeywords || undefined,
-    icons: { icon: '/favicon.svg' },
+    icons: { icon: '/favicon.svg', apple: '/icons/apple-touch-icon.png' },
+    manifest: '/manifest.webmanifest',
+    appleWebApp: { capable: true, statusBarStyle: 'default', title: s.storeName },
     openGraph: {
       type: 'website',
       locale: 'pt_BR',
