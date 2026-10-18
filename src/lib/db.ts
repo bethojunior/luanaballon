@@ -1,17 +1,90 @@
-import mongoose from 'mongoose';
+import mysql from 'mysql2/promise';
 
 const g = globalThis as any;
-g._mongoose ||= { conn: null, promise: null };
+g._mysql ||= { pool: null, ready: null };
 
-export async function connectDB() {
-  if (g._mongoose.conn) return g._mongoose.conn;
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:8517/luana';
-  g._mongoose.promise ||= mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
-  try {
-    g._mongoose.conn = await g._mongoose.promise;
-  } catch (e) {
-    g._mongoose.promise = null;
+const SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS categories (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NULL,
+    image VARCHAR(1024) NULL,
+    \`order\` INT NOT NULL DEFAULT 0,
+    createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updatedAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  `CREATE TABLE IF NOT EXISTS products (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    comparePrice DECIMAL(10,2) NULL,
+    images JSON NULL,
+    category INT UNSIGNED NULL,
+    featured TINYINT(1) NOT NULL DEFAULT 0,
+    active TINYINT(1) NOT NULL DEFAULT 1,
+    createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updatedAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    CONSTRAINT fk_products_category FOREIGN KEY (category) REFERENCES categories(id) ON DELETE SET NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  `CREATE TABLE IF NOT EXISTS posts (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    excerpt TEXT NULL,
+    content MEDIUMTEXT NULL,
+    cover VARCHAR(1024) NULL,
+    published TINYINT(1) NOT NULL DEFAULT 0,
+    publishedAt DATETIME(3) NULL,
+    createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updatedAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  `CREATE TABLE IF NOT EXISTS settings (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    \`key\` VARCHAR(64) NOT NULL UNIQUE DEFAULT 'main',
+    layout VARCHAR(32) NOT NULL DEFAULT 'festa',
+    storeName VARCHAR(255) NULL,
+    whatsapp VARCHAR(64) NULL,
+    heroTitle VARCHAR(255) NULL,
+    heroSubtitle TEXT NULL,
+    instagram VARCHAR(512) NULL,
+    email VARCHAR(255) NULL,
+    address VARCHAR(512) NULL,
+    aboutText TEXT NULL,
+    createdAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updatedAt DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+];
+
+function pool(): mysql.Pool {
+  return (g._mysql.pool ||= mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT || 8506),
+    user: process.env.DB_USER || 'luana',
+    password: process.env.DB_PASSWORD || 'luana',
+    database: process.env.DB_NAME || 'luana',
+    charset: 'utf8mb4',
+    timezone: 'Z',
+    decimalNumbers: true,
+    connectionLimit: 10,
+    connectTimeout: 5000,
+  }));
+}
+
+/** Garante a conexão e cria as tabelas na primeira chamada. */
+export function connectDB() {
+  g._mysql.ready ||= (async () => {
+    for (const ddl of SCHEMA) await pool().query(ddl);
+  })().catch((e) => {
+    g._mysql.ready = null;
     throw e;
-  }
-  return g._mongoose.conn;
+  });
+  return g._mysql.ready as Promise<void>;
+}
+
+export async function query<T = any>(sql: string, params: any[] | Record<string, any> = []): Promise<T> {
+  const [rows] = await pool().query(sql, params);
+  return rows as T;
 }

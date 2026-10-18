@@ -19,7 +19,7 @@ export type SiteSettings = typeof SETTINGS_DEFAULTS;
 export async function getSettings(): Promise<SiteSettings> {
   try {
     await connectDB();
-    const s = await Settings.findOne({ key: 'main' }).lean();
+    const s = await Settings.findOne({ where: { key: 'main' } });
     const clean = Object.fromEntries(Object.entries(plain(s ?? {})).filter(([, v]) => v));
     return { ...SETTINGS_DEFAULTS, ...clean };
   } catch {

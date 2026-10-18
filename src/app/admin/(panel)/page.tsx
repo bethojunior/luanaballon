@@ -5,11 +5,11 @@ import { Category, Post, Product } from '@/lib/models';
 export default async function Dashboard() {
   const stats = await safe(
     async () => ({
-      products: await Product.countDocuments(),
-      active: await Product.countDocuments({ active: true }),
-      categories: await Category.countDocuments(),
-      posts: await Post.countDocuments(),
-      published: await Post.countDocuments({ published: true }),
+      products: await Product.count(),
+      active: await Product.count({ active: true }),
+      categories: await Category.count(),
+      posts: await Post.count(),
+      published: await Post.count({ published: true }),
     }),
     null,
   );

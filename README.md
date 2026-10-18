@@ -1,12 +1,12 @@
 # Luana Balões 🎈
 
-Loja festiva em Next.js 14 com painel administrativo (produtos, categorias, blog e configurações), MongoDB e MinIO.
+Loja festiva em Next.js 14 com painel administrativo (produtos, categorias, blog e configurações), MySQL e MinIO.
 O carrinho finaliza o pedido pelo WhatsApp.
 
 ## Stack
 - **Next.js 14** (App Router) + Tailwind
-- **MongoDB 7** (dados) · **MinIO** (imagens, servidas via `/api/media/...`, sem expor o MinIO)
-- Tudo orquestrado por **Docker Compose** (o site responde direto na porta 80)
+- **MySQL 8** (dados; as tabelas são criadas automaticamente) · **MinIO** (imagens, servidas via `/api/media/...`, sem expor o MinIO)
+- Tudo orquestrado por **Docker Compose** (o site responde direto na porta 8580)
 
 ## Deploy no DigitalOcean
 1. Crie um Droplet Ubuntu (2GB RAM recomendado) com **Docker** (Marketplace "Docker on Ubuntu") e, se tiver domínio, aponte um registro **A** para o IP (HTTPS: use o proxy/Cloudflare do seu domínio ou um Load Balancer do DigitalOcean com certificado).
@@ -19,19 +19,19 @@ O carrinho finaliza o pedido pelo WhatsApp.
    openssl rand -hex 32   # use o resultado em AUTH_SECRET
    docker compose up -d --build
    ```
-4. Acesse `http://SEU_IP/admin` e entre com `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+4. Acesse `http://SEU_IP:8580/admin` e entre com `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
 5. Em **Configurações**, informe o WhatsApp da loja (só números, com 55 + DDD) — é para lá que os pedidos vão.
 
-Firewall: libere apenas 22 e 8580 (e 443 se usar HTTPS na frente) (`ufw allow 22,8580,443/tcp && ufw enable`). Mongo não é exposto; o console do MinIO só em `127.0.0.1:8501` (acesse com `ssh -L 8501:localhost:8501 root@SEU_IP`).
+Firewall: libere apenas 22 e 8580 (e 443 se usar HTTPS na frente) (`ufw allow 22,8580,443/tcp && ufw enable`). O MySQL não é exposto; o console do MinIO só em `127.0.0.1:8501` (acesse com `ssh -L 8501:localhost:8501 root@SEU_IP`).
 
 Atualizar: `git pull && docker compose up -d --build`
 
-Backup: volumes `mongo_data` e `minio_data`
-(`docker compose exec mongo mongodump --archive -u $MONGO_USER -p $MONGO_PASSWORD --authenticationDatabase admin > backup.archive`).
+Backup: volumes `mysql_data` e `minio_data`
+(`docker compose exec mysql sh -c 'mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" luana' > backup.sql`).
 
 ## Desenvolvimento local
 ```bash
-docker compose -f docker-compose.dev.yml up -d   # Mongo + MinIO
+docker compose -f docker-compose.dev.yml up -d   # MySQL + MinIO
 cp .env.example .env.local                        # descomente as variáveis de dev e defina ADMIN_*/AUTH_SECRET
 npm install && npm run dev
 ```

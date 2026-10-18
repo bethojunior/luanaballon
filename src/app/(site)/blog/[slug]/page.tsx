@@ -8,7 +8,7 @@ import { dateBR } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
-const load = (slug: string) => safe(() => Post.findOne({ slug, published: true }).lean() as Promise<any>, null);
+const load = (slug: string) => safe(() => Post.findOne({ where: { slug, published: true } }), null);
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const p = await load(params.slug);

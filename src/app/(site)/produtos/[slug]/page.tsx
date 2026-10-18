@@ -5,13 +5,13 @@ import Gallery from '@/components/Gallery';
 import { BuyBox } from '@/components/AddToCart';
 import ProductCard from '@/components/ProductCard';
 import { getSettings, safe } from '@/lib/data';
-import { Product } from '@/lib/models';
+import { Product, withCategory } from '@/lib/models';
 import { brl } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
 const load = (slug: string) =>
-  safe(() => Product.findOne({ slug, active: true }).populate('category', 'name slug').lean() as Promise<any>, null);
+  safe(async () => (await withCategory(await Product.find({ where: { slug, active: true }, limit: 1 })))[0] ?? null, null);
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const p = await load(params.slug);
@@ -24,11 +24,8 @@ export default async function ProdutoPage({ params }: { params: { slug: string }
   const s = await getSettings();
   const related = p.category
     ? await safe(
-        () =>
-          Product.find({ active: true, category: p.category._id, _id: { $ne: p._id } })
-            .limit(4)
-            .populate('category', 'name slug')
-            .lean() as Promise<any[]>,
+        async () =>
+          withCategory(await Product.find({ where: { active: true, category: p.category._id }, ne: p._id, limit: 4 })),
         [],
       )
     : [];

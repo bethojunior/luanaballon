@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Blog' };
 
 export default async function Blog() {
-  const posts = await safe(() => Post.find({ published: true }).sort({ publishedAt: -1 }).lean() as Promise<any[]>, []);
+  const posts = await safe(() => Post.find({ where: { published: true }, order: [['publishedAt', 'DESC']] }), []);
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="section-title text-pink">Blog da Luana 🎉</h1>

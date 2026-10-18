@@ -6,12 +6,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   await connectDB();
-  return NextResponse.json((await Settings.findOne({ key: 'main' }).lean()) ?? {});
+  return NextResponse.json((await Settings.findOne({ where: { key: 'main' } })) ?? {});
 }
 
 export async function PUT(req: NextRequest) {
   await connectDB();
-  const { _id, __v, key, ...data } = await req.json();
-  const doc = await Settings.findOneAndUpdate({ key: 'main' }, { $set: data }, { upsert: true, new: true }).lean();
-  return NextResponse.json(doc);
+  const { _id, id, key, createdAt, updatedAt, ...data } = await req.json();
+  return NextResponse.json(await Settings.upsert({ key: 'main' }, data));
 }

@@ -1,9 +1,15 @@
 # Uso local: docker compose -f docker-compose.dev.yml up -d  &&  npm run dev
 services:
-  mongo:
-    image: mongo:7
-    ports: ["8517:27017"]
-    volumes: [mongo_dev:/data/db]
+  mysql:
+    image: mysql:8.0
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: luana
+      MYSQL_USER: luana
+      MYSQL_PASSWORD: luana
+    ports: ["8506:3306"]
+    volumes: [mysql_dev:/var/lib/mysql]
   minio:
     image: bitnamilegacy/minio:2025.7.23-debian-12-r5
     environment:
@@ -13,5 +19,5 @@ services:
     volumes: [minio_dev:/bitnami/minio/data]
 
 volumes:
-  mongo_dev:
+  mysql_dev:
   minio_dev:

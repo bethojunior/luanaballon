@@ -1,23 +1,27 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { safe } from '@/lib/data';
-import { Category, Product } from '@/lib/models';
+import { Category, Product, withCategory } from '@/lib/models';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Produtos' };
 
-const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 export default async function Produtos({ searchParams }: { searchParams: { categoria?: string; q?: string } }) {
-  const categories = await safe(() => Category.find().sort({ order: 1, name: 1 }).lean() as Promise<any[]>, []);
+  const categories = await safe(() => Category.find({ order: [['order', 'ASC'], ['name', 'ASC']] }), []);
   const current = categories.find((c) => c.slug === searchParams.categoria);
 
-  const filter: Record<string, any> = { active: true };
-  if (current) filter.category = current._id;
-  if (searchParams.q) filter.name = { $regex: esc(searchParams.q), $options: 'i' };
+  const where: Record<string, any> = { active: true };
+  if (current) where.category = current._id;
 
   const products = await safe(
-    () => Product.find(filter).sort({ createdAt: -1 }).populate('category', 'name slug').lean() as Promise<any[]>,
+    async () =>
+      withCategory(
+        await Product.find({
+          where,
+          like: searchParams.q ? ['name', searchParams.q] : undefined,
+          order: [['createdAt', 'DESC']],
+        }),
+      ),
     [],
   );
 

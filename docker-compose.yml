@@ -3,7 +3,11 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/luana?authSource=admin
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: luana
+      DB_USER: ${MYSQL_USER:?defina MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD}
       MINIO_ENDPOINT: minio
       MINIO_PORT: "9000"
       MINIO_USE_SSL: "false"
@@ -16,25 +20,29 @@ services:
     ports:
       - "${WEB_PORT:-8580}:8580"
     depends_on:
-      mongo:
+      mysql:
         condition: service_healthy
       minio:
         condition: service_started
     networks: [internal]
 
-  mongo:
-    image: mongo:7
+  mysql:
+    image: mysql:8.0
     restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:?defina MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?defina MONGO_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?defina MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: luana
+      MYSQL_USER: ${MYSQL_USER:?defina MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD}
     volumes:
-      - mongo_data:/data/db
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 30s
     networks: [internal]
 
   minio:
@@ -54,5 +62,5 @@ networks:
   internal:
 
 volumes:
-  mongo_data:
+  mysql_data:
   minio_data:

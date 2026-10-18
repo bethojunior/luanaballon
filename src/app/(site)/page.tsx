@@ -5,19 +5,19 @@ import { normalizeTheme } from '@/lib/themes';
 import ProductCard from '@/components/ProductCard';
 import PostCard from '@/components/PostCard';
 import { getSettings, safe } from '@/lib/data';
-import { Category, Post, Product } from '@/lib/models';
+import { Category, Post, Product, withCategory } from '@/lib/models';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const [s, categories, featured, posts] = await Promise.all([
     getSettings(),
-    safe(() => Category.find().sort({ order: 1, name: 1 }).lean() as Promise<any[]>, []),
+    safe(() => Category.find({ order: [['order', 'ASC'], ['name', 'ASC']] }), []),
     safe(
-      () => Product.find({ active: true, featured: true }).sort({ createdAt: -1 }).limit(8).populate('category', 'name slug').lean() as Promise<any[]>,
+      async () => withCategory(await Product.find({ where: { active: true, featured: true }, order: [['createdAt', 'DESC']], limit: 8 })),
       [],
     ),
-    safe(() => Post.find({ published: true }).sort({ publishedAt: -1 }).limit(3).lean() as Promise<any[]>, []),
+    safe(() => Post.find({ where: { published: true }, order: [['publishedAt', 'DESC']], limit: 3 }), []),
   ]);
 
   const theme = normalizeTheme(s.layout);
