@@ -132,6 +132,7 @@ export const Post = new Table('posts', {
 export const Settings = new Table('settings', {
   key: 'str', layout: 'str', storeName: 'str', whatsapp: 'str', heroTitle: 'str', heroSubtitle: 'str',
   instagram: 'str', email: 'str', address: 'str', aboutText: 'str',
+  siteUrl: 'str', seoTitle: 'str', seoDescription: 'str', seoKeywords: 'str', ogTitle: 'str', ogDescription: 'str', ogImage: 'str',
 });
 
 /** Substitui o id em `category` por { _id, name, slug } (equivalente ao antigo populate). */

@@ -58,6 +58,17 @@ const SCHEMA = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
 ];
 
+/** Colunas adicionadas depois da criação inicial das tabelas (também aplicadas em bancos já existentes). */
+const COLUMNS: [table: string, column: string, ddl: string][] = [
+  ['settings', 'siteUrl', 'VARCHAR(255) NULL'],
+  ['settings', 'seoTitle', 'VARCHAR(255) NULL'],
+  ['settings', 'seoDescription', 'TEXT NULL'],
+  ['settings', 'seoKeywords', 'TEXT NULL'],
+  ['settings', 'ogTitle', 'VARCHAR(255) NULL'],
+  ['settings', 'ogDescription', 'TEXT NULL'],
+  ['settings', 'ogImage', 'VARCHAR(1024) NULL'],
+];
+
 function pool(): mysql.Pool {
   return (g._mysql.pool ||= mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
@@ -77,6 +88,13 @@ function pool(): mysql.Pool {
 export function connectDB() {
   g._mysql.ready ||= (async () => {
     for (const ddl of SCHEMA) await pool().query(ddl);
+    for (const [table, column, ddl] of COLUMNS) {
+      const [rows]: any = await pool().query(
+        'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+        [table, column],
+      );
+      if (!rows.length) await pool().query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${ddl}`);
+    }
   })().catch((e) => {
     g._mysql.ready = null;
     throw e;

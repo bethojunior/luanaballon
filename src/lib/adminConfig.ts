@@ -83,6 +83,16 @@ export const SETTINGS_FIELDS: Field[] = [
   { key: 'address', label: 'Endereço / região de atendimento', type: 'text' },
 ];
 
+export const SEO_FIELDS: Field[] = [
+  { key: 'seoTitle', label: 'Título do site no Google', type: 'text', help: 'Ideal: até 60 caracteres. É o título azul que aparece na busca.' },
+  { key: 'seoDescription', label: 'Descrição no Google', type: 'textarea', help: 'Ideal: entre 120 e 160 caracteres. Explique em uma frase o que a loja oferece.' },
+  { key: 'seoKeywords', label: 'Palavras-chave', type: 'textarea', help: 'Separe por vírgula. Ex: balões, decoração de festa, arco de balões.' },
+  { key: 'siteUrl', label: 'Endereço do site (URL)', type: 'text', help: 'Ex: https://www.luanabaloes.com.br. Se deixar vazio, o endereço é detectado automaticamente.' },
+  { key: 'ogTitle', label: 'Título ao compartilhar (WhatsApp, Instagram, Facebook)', type: 'text', help: 'Aparece no cartão quando alguém envia o link do site.' },
+  { key: 'ogDescription', label: 'Texto ao compartilhar', type: 'textarea', help: 'Texto curto abaixo do título no cartão de compartilhamento.' },
+  { key: 'ogImage', label: 'Foto ao compartilhar', type: 'image', help: 'Tamanho ideal: 1200 × 630 px (paisagem). É a foto que aparece quando o link é compartilhado.' },
+];
+
 export const APPEARANCE_FIELDS: Field[] = [
   { key: 'layout', label: 'Layout do site', type: 'theme', help: 'Escolha qual layout fica ativo na loja. A mudança vale assim que você salvar.' },
 ];

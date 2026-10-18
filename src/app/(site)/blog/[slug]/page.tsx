@@ -12,7 +12,7 @@ const load = (slug: string) => safe(() => Post.findOne({ where: { slug, publishe
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const p = await load(params.slug);
-  return p ? { title: p.title, description: p.excerpt } : {};
+  return p ? { title: p.title, description: p.excerpt, openGraph: { title: p.title, description: p.excerpt, images: p.cover ? [p.cover] : undefined } } : {};
 }
 
 export default async function PostPage({ params }: { params: { slug: string } }) {

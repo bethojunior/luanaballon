@@ -12,6 +12,14 @@ export const SETTINGS_DEFAULTS = {
   email: '',
   address: '',
   aboutText: 'Somos apaixonados por festas! Trabalhamos com balões, arranjos e artigos de decoração para todas as ocasiões.',
+  // SEO e compartilhamento
+  siteUrl: '',
+  seoTitle: 'Luana Balões | Balões e decoração para sua festa',
+  seoDescription: 'Balões, decoração e artigos para festas. Arcos de balões, painéis e kits personalizados. Peça direto pelo WhatsApp!',
+  seoKeywords: 'balões, decoração de festa, arco de balões, festa infantil, aniversário, painel de balões, artigos para festa',
+  ogTitle: 'Luana Balões 🎈 Balões e decoração para sua festa',
+  ogDescription: 'Sua festa mais colorida! Balões, arcos e decoração personalizada. Peça pelo WhatsApp.',
+  ogImage: '',
 };
 
 export type SiteSettings = typeof SETTINGS_DEFAULTS;

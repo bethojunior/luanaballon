@@ -15,7 +15,13 @@ const load = (slug: string) =>
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const p = await load(params.slug);
-  return p ? { title: p.name, description: p.description?.slice(0, 160) } : {};
+  return p
+    ? {
+        title: p.name,
+        description: p.description?.slice(0, 160),
+        openGraph: { title: p.name, description: p.description?.slice(0, 160), images: p.images?.[0] ? [p.images[0]] : undefined },
+      }
+    : {};
 }
 
 export default async function ProdutoPage({ params }: { params: { slug: string } }) {

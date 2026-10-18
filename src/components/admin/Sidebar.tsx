@@ -9,6 +9,7 @@ const items = [
   { href: '/admin/categories', label: 'Categorias', icon: '🏷️' },
   { href: '/admin/posts', label: 'Blog', icon: '📝' },
   { href: '/admin/appearance', label: 'Aparência', icon: '🎨' },
+  { href: '/admin/seo', label: 'SEO e compartilhamento', icon: '🔎' },
   { href: '/admin/settings', label: 'Configurações', icon: '⚙️' },
 ];
 
