@@ -11,7 +11,7 @@ const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito' });
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 const grotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-grotesk' });
 
-export const viewport: Viewport = { themeColor: '#FF3D8B' };
+export const viewport: Viewport = { themeColor: '#FF3D8B', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
 export const generateMetadata = (): Promise<Metadata> => siteMetadata();
 

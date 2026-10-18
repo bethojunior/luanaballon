@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-const INSTALLED_KEY = 'pwa-app-installed'
 const DISMISSED_KEY = 'pwa-dismissed-until'
-const DISMISS_DURATION_MS = 5 * 60 * 1000
+/** Depois de "Agora não" o convite volta sozinho, sem precisar recarregar a página. */
+const RETRY_MS = 45 * 1000
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -13,159 +13,152 @@ type BeforeInstallPromptEvent = Event & {
 }
 
 function isStandalone(): boolean {
-  if (typeof window === 'undefined') return true
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
     (window.navigator as Navigator & { standalone?: boolean }).standalone === true
   )
 }
 
-function readInstalled(): boolean {
+const isMobile = () => window.matchMedia('(pointer: coarse)').matches
+const isIOS = () =>
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+function readDismissedUntil(): number {
   try {
-    return localStorage.getItem(INSTALLED_KEY) === '1'
+    return parseInt(localStorage.getItem(DISMISSED_KEY) || '0', 10) || 0
   } catch {
-    return false
+    return 0
   }
-}
-
-function isMobile(): boolean {
-  if (typeof window === 'undefined') return false
-  return window.matchMedia('(pointer: coarse)').matches
-}
-
-function isDismissed(): boolean {
-  try {
-    const until = localStorage.getItem(DISMISSED_KEY)
-    if (!until) return false
-    return Date.now() < parseInt(until, 10)
-  } catch {
-    return false
-  }
-}
-
-function shouldShowInstallFlow(): boolean {
-  if (!isMobile()) return false
-  if (isStandalone()) return false
-  if (readInstalled()) return false
-  if (isDismissed()) return false
-  return true
 }
 
 export function PwaInstallPrompt({ name }: { name: string }) {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [visible, setVisible] = useState(false)
-  const [portalReady, setPortalReady] = useState(false)
-
-  useEffect(() => setPortalReady(true), [])
-
-  useEffect(() => {
-    if (!visible) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setVisible(false)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [visible])
+  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null)
+  const [eligible, setEligible] = useState(false)
+  const [ios, setIos] = useState(false)
+  const [manual, setManual] = useState(false)
+  const [until, setUntil] = useState(0)
+  const [now, setNow] = useState(0)
+  const [installed, setInstalled] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    setIos(isIOS())
+    setEligible(isMobile() && !isStandalone())
+    setUntil(readDismissedUntil())
+    setNow(Date.now())
 
-    if (isStandalone()) {
-      try {
-        localStorage.setItem(INSTALLED_KEY, '1')
-      } catch {
-        /* ignore */
-      }
-    }
-
-    const onInstalled = () => {
-      try {
-        localStorage.setItem(INSTALLED_KEY, '1')
-      } catch {
-        /* ignore */
-      }
-      setVisible(false)
-      setDeferredPrompt(null)
-    }
-    window.addEventListener('appinstalled', onInstalled)
-
-    const handler = (e: Event) => {
+    const onPrompt = (e: Event) => {
       e.preventDefault()
-      if (!shouldShowInstallFlow()) return
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
-      setVisible(true)
+      setDeferred(e as BeforeInstallPromptEvent)
+      setManual(false)
     }
-
-    window.addEventListener('beforeinstallprompt', handler)
+    const onInstalled = () => {
+      setInstalled(true)
+      setDeferred(null)
+    }
+    window.addEventListener('beforeinstallprompt', onPrompt)
+    window.addEventListener('appinstalled', onInstalled)
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler)
+      window.removeEventListener('beforeinstallprompt', onPrompt)
       window.removeEventListener('appinstalled', onInstalled)
     }
   }, [])
 
-  if (!visible || !deferredPrompt || !portalReady) return null
+  // reabre o convite quando o tempo de "Agora não" termina
+  useEffect(() => {
+    if (!until) return
+    const wait = until - Date.now()
+    if (wait <= 0) return setNow(Date.now())
+    const t = setTimeout(() => setNow(Date.now()), wait + 50)
+    return () => clearTimeout(t)
+  }, [until])
 
-  const handleInstall = async () => {
+  const dismiss = useCallback(() => {
+    const next = Date.now() + RETRY_MS
     try {
-      await deferredPrompt.prompt()
-      const choice = await deferredPrompt.userChoice
-      if (choice.outcome === 'accepted') {
-        try {
-          localStorage.setItem(INSTALLED_KEY, '1')
-        } catch {
-          /* ignore */
-        }
-        setVisible(false)
-        setDeferredPrompt(null)
-      }
-    } catch (error) {
-      console.error('[PWA] Erro ao mostrar prompt de instalação', error)
-    }
-  }
-
-  const handleDismiss = () => {
-    try {
-      localStorage.setItem(DISMISSED_KEY, String(Date.now() + DISMISS_DURATION_MS))
+      localStorage.setItem(DISMISSED_KEY, String(next))
     } catch {
       /* ignore */
     }
-    setVisible(false)
+    setUntil(next)
+    setNow(Date.now())
+  }, [])
+
+  const install = async () => {
+    if (!deferred) return
+    try {
+      await deferred.prompt()
+      const choice = await deferred.userChoice
+      if (choice.outcome === 'accepted') setInstalled(true)
+      else setManual(true) // o evento só vale uma vez: orienta a instalar pelo menu enquanto o navegador não libera outro
+    } catch (error) {
+      console.error('[PWA] Erro ao mostrar prompt de instalação', error)
+      setManual(true)
+    }
+    setDeferred(null)
   }
+
+  const canShowSomething = !!deferred || ios || manual
+  const visible = eligible && !installed && canShowSomething && now >= until
+
+  useEffect(() => {
+    if (!visible) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [visible])
+
+  if (!visible) return null
 
   return createPortal(
     <div
-      className='fixed inset-0 z-[99999] isolate flex flex-col justify-end bg-black/50 px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[2px]'
+      className='fixed inset-0 z-[99999] isolate flex flex-col justify-end bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] backdrop-blur-[2px]'
       role='dialog'
       aria-modal='true'
       aria-labelledby='pwa-install-title'
-      onClick={handleDismiss}
     >
-      <div className='mx-auto w-full max-w-md' onClick={(e) => e.stopPropagation()}>
-        <div className='flex flex-col gap-3 rounded-2xl bg-gray-900 p-4 text-white shadow-2xl ring-1 ring-white/10 sm:flex-row sm:items-center'>
-          <div className='min-w-0 flex-1'>
-            <p id='pwa-install-title' className='text-sm font-semibold'>
-              Adicionar {name} à tela inicial
-            </p>
-            <p className='text-xs text-gray-300'>
-              Acesse mais rápido como se fosse um app instalado.
-            </p>
-          </div>
-          <div className='flex shrink-0 flex-wrap gap-2 sm:justify-end'>
+      <div className='mx-auto w-full max-w-md rounded-2xl bg-gray-900 p-5 text-white shadow-2xl ring-1 ring-white/10'>
+        <p id='pwa-install-title' className='text-base font-semibold'>
+          Instale o app {name}
+        </p>
+        <p className='mt-1 text-sm text-gray-300'>
+          Acesse mais rápido, direto da tela inicial, como um aplicativo.
+        </p>
+
+        {deferred ? (
+          <p className='mt-3 text-sm text-gray-300'>Toque em <b>Instalar</b> e confirme. Leva poucos segundos.</p>
+        ) : ios ? (
+          <ol className='mt-3 list-decimal space-y-1 pl-5 text-sm text-gray-200'>
+            <li>Toque em <b>Compartilhar</b> (o ícone de quadrado com seta) na barra do Safari.</li>
+            <li>Escolha <b>Adicionar à Tela de Início</b>.</li>
+            <li>Toque em <b>Adicionar</b>.</li>
+          </ol>
+        ) : (
+          <ol className='mt-3 list-decimal space-y-1 pl-5 text-sm text-gray-200'>
+            <li>Toque no menu <b>⋮</b> do navegador.</li>
+            <li>Escolha <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.</li>
+          </ol>
+        )}
+
+        <div className='mt-4 flex gap-2'>
+          <button
+            type='button'
+            onClick={dismiss}
+            className='flex-1 rounded-xl border border-gray-600 px-4 py-3 text-sm font-medium text-gray-200 active:bg-gray-800'
+          >
+            Agora não
+          </button>
+          {deferred && (
             <button
               type='button'
-              onClick={handleDismiss}
-              className='rounded-lg border border-gray-600 px-3 py-1.5 text-xs font-medium text-gray-200 hover:bg-gray-800'
-            >
-              Agora não
-            </button>
-            <button
-              type='button'
-              onClick={handleInstall}
-              className='rounded-lg bg-pink px-3 py-1.5 text-xs font-semibold text-white hover:bg-pink-dark'
+              onClick={install}
+              className='flex-[2] rounded-xl bg-pink px-4 py-3 text-sm font-bold text-white active:bg-pink-dark'
             >
               Instalar
             </button>
-          </div>
+          )}
         </div>
       </div>
     </div>,

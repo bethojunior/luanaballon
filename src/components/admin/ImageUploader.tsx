@@ -42,10 +42,10 @@ export default function ImageUploader({ value, onChange, multiple }: Props) {
     <div>
       <div className="flex flex-wrap gap-3">
         {value.map((url, i) => (
-          <div key={url} className="group relative h-28 w-28 overflow-hidden rounded-2xl border-2 border-ink/10 bg-white">
+          <div key={url} className="group relative h-24 w-24 overflow-hidden sm:h-28 sm:w-28 rounded-2xl border-2 border-ink/10 bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-x-0 bottom-0 flex justify-between bg-ink/70 px-1 py-0.5 text-white opacity-0 transition group-hover:opacity-100">
+            <div className="absolute inset-x-0 bottom-0 flex justify-between bg-ink/70 text-white transition md:opacity-0 md:group-hover:opacity-100 [&>button]:min-h-9 [&>button]:min-w-9">
               {multiple && <button type="button" onClick={() => move(i, -1)} aria-label="Mover para trás">←</button>}
               <button type="button" onClick={() => onChange(value.filter((_, k) => k !== i))} aria-label="Remover">🗑</button>
               {multiple && <button type="button" onClick={() => move(i, 1)} aria-label="Mover para frente">→</button>}
@@ -58,7 +58,7 @@ export default function ImageUploader({ value, onChange, multiple }: Props) {
             type="button"
             disabled={busy}
             onClick={() => input.current?.click()}
-            className="grid h-28 w-28 place-items-center rounded-2xl border-2 border-dashed border-grape/50 bg-grape-soft text-sm font-bold text-grape hover:border-grape"
+            className="grid h-24 w-24 place-items-center sm:h-28 sm:w-28 rounded-2xl border-2 border-dashed border-grape/50 bg-grape-soft text-sm font-bold text-grape hover:border-grape"
           >
             {busy ? 'Enviando…' : '+ Imagem'}
           </button>

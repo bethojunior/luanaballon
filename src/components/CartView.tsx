@@ -31,8 +31,8 @@ export default function CartView({ whatsapp }: { whatsapp: string }) {
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <div className="card divide-y divide-ink/10">
         {items.map((i) => (
-          <div key={i.id} className="flex items-center gap-4 p-4">
-            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-pink-soft">
+          <div key={i.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+            <div className="h-16 w-16 shrink-0 sm:h-20 sm:w-20 overflow-hidden rounded-2xl bg-pink-soft">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {i.image ? <img src={i.image} alt="" className="h-full w-full object-cover" /> : <span className="grid h-full place-items-center text-3xl">🎈</span>}
             </div>
@@ -41,16 +41,16 @@ export default function CartView({ whatsapp }: { whatsapp: string }) {
               <div className="font-bold text-pink">{brl(i.price)}</div>
               <button onClick={() => remove(i.id)} className="text-sm text-ink/50 underline hover:text-pink">Remover</button>
             </div>
-            <div className="flex items-center rounded-full border-2 border-ink/10">
-              <button className="h-9 w-9 text-lg" onClick={() => setQty(i.id, i.qty - 1)} aria-label="Diminuir">−</button>
+            <div className="ml-auto flex items-center rounded-full border-2 border-ink/10">
+              <button className="h-11 w-11 text-lg" onClick={() => setQty(i.id, i.qty - 1)} aria-label="Diminuir">−</button>
               <span className="w-7 text-center font-bold">{i.qty}</span>
-              <button className="h-9 w-9 text-lg" onClick={() => setQty(i.id, i.qty + 1)} aria-label="Aumentar">+</button>
+              <button className="h-11 w-11 text-lg" onClick={() => setQty(i.id, i.qty + 1)} aria-label="Aumentar">+</button>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="card h-fit space-y-4 p-6">
+      <div className="card h-fit space-y-4 p-5 sm:p-6">
         <h2 className="text-2xl font-bold">Resumo</h2>
         <div className="flex justify-between text-xl font-extrabold">
           <span>Total</span>

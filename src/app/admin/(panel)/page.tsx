@@ -22,7 +22,7 @@ export default async function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold">Olá, Luana! 👋</h1>
+      <h1 className="text-2xl font-bold sm:text-3xl">Olá, Luana! 👋</h1>
       <p className="mt-1 text-ink/60">Gerencie sua loja, seu blog e suas configurações.</p>
 
       {!cards ? (

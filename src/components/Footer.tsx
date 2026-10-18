@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { SiteSettings } from '@/lib/data';
+import type { ThemeDef } from '@/lib/themes';
 
-export default function Footer({ s }: { s: SiteSettings }) {
+export default function Footer({ s, theme }: { s: SiteSettings; theme: ThemeDef }) {
   return (
     <footer className="mt-20 bg-ink text-white">
       <div className="h-3 bg-[repeating-linear-gradient(90deg,rgb(var(--pink))_0_40px,rgb(var(--sun))_40px_80px,rgb(var(--aqua))_80px_120px,rgb(var(--grape))_120px_160px)]" />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
-          <div className="font-display text-2xl font-bold">🎈 {s.storeName}</div>
+          <div className="font-display text-2xl font-bold">{theme.emoji} {s.storeName}</div>
           <p className="mt-3 text-white/70">{s.aboutText}</p>
         </div>
         <div>

@@ -7,7 +7,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-[#f6f1ff]">
       <Sidebar />
-      <div className="mx-auto max-w-4xl p-4 md:ml-60 md:max-w-none md:p-8">
+      <div className="p-4 pb-28 md:ml-60 md:p-8 md:pb-8">
         <div className="mx-auto max-w-4xl">{children}</div>
       </div>
     </div>

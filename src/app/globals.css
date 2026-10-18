@@ -6,7 +6,7 @@
 /* Cores em canais RGB para funcionar com opacidade do Tailwind. */
 
 :root,
-[data-theme='festa'] {
+[data-base='festa'] {
   --pink: 255 61 139;
   --pink-dark: 217 31 108;
   --pink-soft: 255 227 239;
@@ -28,7 +28,7 @@
   --card-shadow: 0 6px 24px -8px rgb(123 77 255 / 0.25);
 }
 
-[data-theme='elegante'] {
+[data-base='elegante'] {
   --pink: 183 110 121; /* rosé */
   --pink-dark: 150 84 95;
   --pink-soft: 248 236 236;
@@ -50,7 +50,7 @@
   --card-shadow: 0 1px 0 rgb(190 150 70 / 0.35), 0 12px 30px -18px rgb(58 42 46 / 0.35);
 }
 
-[data-theme='minimo'] {
+[data-base='minimo'] {
   --pink: 17 17 17; /* preto como cor primária */
   --pink-dark: 51 51 51;
   --pink-soft: 243 243 243;
@@ -72,6 +72,51 @@
   --card-shadow: none;
 }
 
+[data-base='baby'] {
+  --pink: 232 120 160; /* rosa bebê */
+  --pink-dark: 200 90 130;
+  --pink-soft: 253 236 242;
+  --sun: 255 224 130; /* amarelo pastel */
+  --sun-dark: 232 190 80;
+  --sun-soft: 255 247 218;
+  --aqua: 142 205 226; /* azul bebê */
+  --aqua-soft: 228 244 250;
+  --grape: 190 165 232; /* lilás */
+  --grape-soft: 241 235 252;
+  --ink: 84 71 102;
+  --cream: 255 251 247;
+  --display: var(--font-fredoka);
+  --body: var(--font-nunito);
+  --r-lg: 2rem;
+  --r-md: 1.25rem;
+  --r-btn: 9999px;
+  --btn-offset: 3px;
+  --card-shadow: 0 8px 28px -12px rgb(190 165 232 / 0.55);
+}
+
+[data-base='noite'] {
+  --pink: 255 46 151; /* rosa neon */
+  --pink-dark: 196 24 112;
+  --pink-soft: 52 20 48;
+  --sun: 255 214 10;
+  --sun-dark: 190 150 0;
+  --sun-soft: 58 48 10;
+  --aqua: 0 229 255; /* ciano neon */
+  --aqua-soft: 12 48 56;
+  --grape: 160 108 255;
+  --grape-soft: 36 28 70;
+  --ink: 238 232 255;
+  --cream: 14 10 28;
+  --display: var(--font-grotesk);
+  --body: var(--font-grotesk);
+  --r-lg: 1rem;
+  --r-md: 0.75rem;
+  --r-btn: 0.5rem;
+  --btn-offset: 0px;
+  --card-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 0 32px -12px rgb(255 46 151 / 0.55);
+}
+[data-dark] { color-scheme: dark; }
+
 [data-theme] {
   font-family: var(--body), sans-serif;
   color: rgb(var(--ink));
@@ -83,19 +128,41 @@
 [data-theme] .rounded-2xl,
 [data-theme] .rounded-xl { border-radius: var(--r-md); }
 
-[data-theme='elegante'] h1,
-[data-theme='elegante'] h2,
-[data-theme='elegante'] h3,
-[data-theme='elegante'] h4 { font-weight: 600; letter-spacing: 0.01em; }
-[data-theme='elegante'] .btn { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.8rem; }
-[data-theme='minimo'] h1,
-[data-theme='minimo'] h2,
-[data-theme='minimo'] h3 { letter-spacing: -0.03em; }
-[data-theme='minimo'] .card { border: 1px solid rgb(var(--ink)); }
-[data-theme='minimo'] .input { border-color: rgb(var(--ink)); }
+/* noite: superfícies escuras no lugar do branco */
+[data-dark] .bg-white,
+[data-dark] .card,
+[data-dark] .btn-ghost,
+[data-dark] .input { background-color: rgb(var(--surface, 26 20 48)); }
+[data-dark] .bg-white\/95,
+[data-dark] .bg-white\/90 { background-color: rgb(var(--surface, 26 20 48) / 0.92); }
+[data-dark] .bg-ink { background-color: rgb(var(--footer, 8 5 18)); }
+[data-dark] .bg-sun,
+[data-dark] .btn-sun { color: #14101f; }
+[data-dark] .input { color: rgb(var(--ink)); }
+[data-dark] .btn-primary { box-shadow: 0 0 22px -4px rgb(var(--pink) / 0.8); }
+[data-base='noite'] h1 { text-shadow: 0 0 28px rgb(var(--pink) / 0.55); }
+[data-base='baby'] h1,
+[data-base='baby'] h2 { font-weight: 700; }
+
+[data-base='elegante'] h1,
+[data-base='elegante'] h2,
+[data-base='elegante'] h3,
+[data-base='elegante'] h4 { font-weight: 600; letter-spacing: 0.01em; }
+[data-base='elegante'] .btn { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.8rem; }
+[data-base='minimo'] h1,
+[data-base='minimo'] h2,
+[data-base='minimo'] h3 { letter-spacing: -0.03em; }
+[data-base='minimo'] .card { border: 1px solid rgb(var(--ink)); }
+[data-base='minimo'] .input { border-color: rgb(var(--ink)); }
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  img { max-width: 100%; }
   body {
+    overflow-x: hidden;
     @apply bg-cream font-body text-ink antialiased;
   }
   h1, h2, h3, h4 {
@@ -105,11 +172,12 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 font-bold transition active:scale-95 disabled:opacity-50;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 px-6 py-3 font-bold transition active:scale-95 disabled:opacity-50;
     border-radius: var(--r-btn);
   }
   .btn-primary {
-    @apply btn bg-pink text-white hover:-translate-y-0.5 hover:bg-pink-dark;
+    @apply btn bg-pink hover:-translate-y-0.5 hover:bg-pink-dark;
+    color: rgb(var(--on-pink, 255 255 255));
     box-shadow: 0 var(--btn-offset) 0 rgb(var(--pink-dark));
   }
   .btn-sun {
@@ -128,7 +196,7 @@
     box-shadow: var(--card-shadow);
   }
   .input {
-    @apply w-full border-2 border-ink/10 bg-white px-4 py-2.5 outline-none transition focus:border-grape;
+    @apply min-h-[44px] w-full text-base border-2 border-ink/10 bg-white px-4 py-2.5 outline-none transition focus:border-grape;
     border-radius: var(--r-md);
   }
   .label {
@@ -140,7 +208,7 @@
 }
 
 .confetti {
-  background-color: #fff7e6;
+  background-color: rgb(var(--cream));
   background-image:
     radial-gradient(circle at 10% 20%, rgb(var(--pink)) 0 5px, transparent 6px),
     radial-gradient(circle at 80% 30%, rgb(var(--aqua)) 0 4px, transparent 5px),
@@ -149,13 +217,29 @@
     radial-gradient(circle at 50% 10%, rgb(var(--sun)) 0 3px, transparent 4px);
   background-size: 220px 220px;
 }
-[data-theme='elegante'] .confetti {
+[data-base='elegante'] .confetti {
   background-color: rgb(var(--pink-soft));
   background-image: linear-gradient(180deg, rgb(var(--cream)), rgb(var(--pink-soft)));
 }
-[data-theme='minimo'] .confetti {
+[data-base='minimo'] .confetti {
   background-color: rgb(var(--cream));
   background-image: none;
+}
+
+[data-base='baby'] .confetti {
+  background-color: rgb(var(--cream));
+  background-image:
+    radial-gradient(circle at 12% 25%, rgb(var(--pink) / 0.35) 0 6px, transparent 7px),
+    radial-gradient(circle at 78% 20%, rgb(var(--aqua) / 0.5) 0 5px, transparent 6px),
+    radial-gradient(circle at 35% 78%, rgb(var(--sun) / 0.7) 0 6px, transparent 7px),
+    radial-gradient(circle at 85% 70%, rgb(var(--grape) / 0.5) 0 5px, transparent 6px);
+  background-size: 200px 200px;
+}
+[data-base='noite'] .confetti {
+  background-color: rgb(var(--cream));
+  background-image:
+    radial-gradient(60% 80% at 15% 20%, rgb(var(--pink) / 0.28), transparent 70%),
+    radial-gradient(50% 70% at 90% 80%, rgb(var(--aqua) / 0.22), transparent 70%);
 }
 
 @keyframes floaty {

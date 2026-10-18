@@ -22,8 +22,8 @@ export default function ResourceList({ resource }: { resource: string }) {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{cfg.label}</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold sm:text-3xl">{cfg.label}</h1>
         <Link href={`/admin/${resource}/new`} className="btn-primary">+ Novo {cfg.singular}</Link>
       </div>
 
@@ -34,22 +34,22 @@ export default function ResourceList({ resource }: { resource: string }) {
       ) : (
         <div className="card divide-y divide-ink/10 overflow-hidden">
           {items.map((i) => (
-            <div key={i._id} className="flex items-center gap-4 p-4">
-              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-pink-soft">
+            <div key={i._id} className="flex flex-wrap items-center gap-x-3 gap-y-2 p-3 sm:flex-nowrap sm:gap-4 sm:p-4">
+              <div className="h-12 w-12 shrink-0 sm:h-14 sm:w-14 overflow-hidden rounded-xl bg-pink-soft">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 {cfg.thumb(i) ? <img src={cfg.thumb(i)} alt="" className="h-full w-full object-cover" /> : <span className="grid h-full place-items-center">🎈</span>}
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-[calc(100%-4rem)] sm:basis-0">
                 <div className="truncate font-bold">{cfg.title(i)}</div>
                 <div className="truncate text-sm text-ink/60">{cfg.subtitle(i)}</div>
               </div>
               {cfg.status && (
-                <span className={`hidden rounded-full px-3 py-1 text-xs font-bold sm:inline ${['Ativo', 'Publicado'].includes(cfg.status(i)) ? 'bg-aqua-soft text-aqua' : 'bg-sun-soft text-ink/70'}`}>
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${['Ativo', 'Publicado'].includes(cfg.status(i)) ? 'bg-aqua-soft text-aqua' : 'bg-sun-soft text-ink/70'}`}>
                   {cfg.status(i)}
                 </span>
               )}
-              <Link href={`/admin/${resource}/${i._id}`} className="btn-ghost btn-sm">Editar</Link>
-              <button onClick={() => remove(i)} className="btn-sm rounded-full px-3 py-2 text-red-600 hover:bg-red-50" aria-label="Excluir">🗑</button>
+              <Link href={`/admin/${resource}/${i._id}`} className="btn-ghost btn-sm ml-auto">Editar</Link>
+              <button onClick={() => remove(i)} className="grid h-11 w-11 place-items-center rounded-full text-red-600 hover:bg-red-50" aria-label="Excluir">🗑</button>
             </div>
           ))}
         </div>

@@ -26,7 +26,7 @@ export default async function Produtos({ searchParams }: { searchParams: { categ
   );
 
   const chip = (active: boolean) =>
-    `rounded-full px-4 py-2 font-bold transition ${active ? 'bg-pink text-white' : 'bg-white hover:bg-pink-soft'}`;
+    `shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-bold transition ${active ? 'bg-pink text-white' : 'bg-white hover:bg-pink-soft'}`;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
@@ -38,7 +38,7 @@ export default async function Produtos({ searchParams }: { searchParams: { categ
         <button className="btn-primary">Buscar</button>
       </form>
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="-mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-2 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
         <Link href="/produtos" className={chip(!current)}>Todos</Link>
         {categories.map((c) => (
           <Link key={c._id} href={`/produtos?categoria=${c.slug}`} className={chip(current?._id === c._id)}>{c.name}</Link>

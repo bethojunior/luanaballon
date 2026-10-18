@@ -62,7 +62,7 @@ export default function ResourceForm({ fields, saveUrl, method, loadUrl, backHre
   if (loading) return <p>Carregando…</p>;
 
   return (
-    <form onSubmit={submit} className="card grid gap-5 p-6 sm:grid-cols-2">
+    <form onSubmit={submit} className="card grid gap-5 p-4 pb-0 sm:grid-cols-2 sm:p-6 sm:pb-0">
       {fields.map((f) => (
         <div key={f.key} className={f.half || f.type === 'boolean' ? '' : 'sm:col-span-2'}>
           {f.type !== 'boolean' && <label className="label">{f.label}{f.required && ' *'}</label>}
@@ -90,7 +90,7 @@ export default function ResourceForm({ fields, saveUrl, method, loadUrl, backHre
             />
           )}
           {f.type === 'boolean' && (
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border-2 border-ink/10 bg-white px-4 py-3 font-bold">
+            <label className="flex min-h-[48px] cursor-pointer items-center gap-3 rounded-xl border-2 border-ink/10 bg-white px-4 py-3 font-bold">
               <input type="checkbox" className="h-5 w-5 accent-pink" checked={!!data[f.key]} onChange={(e) => set(f.key, e.target.checked)} />
               {f.label}
             </label>
@@ -109,9 +109,9 @@ export default function ResourceForm({ fields, saveUrl, method, loadUrl, backHre
         </div>
       ))}
 
-      <div className="flex flex-wrap items-center gap-3 sm:col-span-2">
-        <button className="btn-primary" disabled={saving}>{saving ? 'Salvando…' : 'Salvar'}</button>
-        {backHref && <Link href={backHref} className="btn-ghost">Cancelar</Link>}
+      <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] z-20 -mx-4 flex flex-wrap items-center gap-3 border-t border-ink/10 bg-white px-4 py-3 sm:static sm:col-span-2 sm:mx-0 sm:border-0 sm:px-0 md:bottom-0 md:sticky">
+        <button className="btn-primary flex-1 sm:flex-none" disabled={saving}>{saving ? 'Salvando…' : 'Salvar'}</button>
+        {backHref && <Link href={backHref} className="btn-ghost flex-1 sm:flex-none">Cancelar</Link>}
         {saved && <span className="font-bold text-aqua">✓ Salvo!</span>}
         {error && <span className="font-bold text-red-600">{error}</span>}
       </div>

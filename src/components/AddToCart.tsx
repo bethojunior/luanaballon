@@ -11,7 +11,7 @@ export function AddToCartButton({ product, small }: { product: P; small?: boolea
   const [done, setDone] = useState(false);
   return (
     <button
-      className={`btn-primary ${small ? 'btn-sm' : ''}`}
+      className={`btn-primary ${small ? 'btn-sm w-full sm:w-auto' : ''}`}
       onClick={() => {
         add(product);
         setDone(true);
@@ -34,12 +34,12 @@ export function BuyBox({ product, whatsapp }: { product: P; whatsapp: string }) 
       <div className="flex items-center gap-3">
         <span className="font-bold">Quantidade</span>
         <div className="flex items-center rounded-full border-2 border-ink/10 bg-white">
-          <button className="h-10 w-10 text-xl" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Diminuir">−</button>
+          <button className="h-11 w-11 text-xl" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Diminuir">−</button>
           <span className="w-8 text-center font-bold">{qty}</span>
-          <button className="h-10 w-10 text-xl" onClick={() => setQty(qty + 1)} aria-label="Aumentar">+</button>
+          <button className="h-11 w-11 text-xl" onClick={() => setQty(qty + 1)} aria-label="Aumentar">+</button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <button
           className="btn-primary"
           onClick={() => {

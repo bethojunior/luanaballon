@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Balloon from '@/components/Balloon';
 import Hero from '@/components/Heroes';
-import { normalizeTheme } from '@/lib/themes';
+import { activeTheme } from '@/lib/activeTheme';
 import ProductCard from '@/components/ProductCard';
 import PostCard from '@/components/PostCard';
 import { getSettings, safe } from '@/lib/data';
@@ -20,7 +20,7 @@ export default async function Home() {
     safe(() => Post.find({ where: { published: true }, order: [['publishedAt', 'DESC']], limit: 3 }), []),
   ]);
 
-  const theme = normalizeTheme(s.layout);
+  const theme = activeTheme(s.layout);
   const colors = ['pink', 'sun', 'aqua', 'grape'];
 
   return (
