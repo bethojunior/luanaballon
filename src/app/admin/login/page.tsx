@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PasswordInput from '@/components/PasswordInput';
 
 export default function Login() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function Login() {
         </div>
         <div>
           <label className="label">Senha</label>
-          <input className="input" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         {error && <p className="text-sm font-bold text-red-600">{error}</p>}
         <button className="btn-primary w-full" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>

@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useCart } from './CartProvider';
 import { brl } from '@/lib/utils';
 
-export default function CartView({ whatsapp }: { whatsapp: string }) {
+export default function CartView({ whatsapp, userName = '' }: { whatsapp: string; userName?: string }) {
   const { items, total, ready, setQty, remove, clear } = useCart();
-  const [name, setName] = useState('');
+  const [name, setName] = useState(userName);
   const [note, setNote] = useState('');
 
   if (!ready) return null;

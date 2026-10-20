@@ -129,6 +129,8 @@ export const Post = new Table('posts', {
   title: 'str', slug: 'str', excerpt: 'str', content: 'str', cover: 'str', published: 'bool', publishedAt: 'date',
 });
 
+export const User = new Table('users', { name: 'str', email: 'str', phone: 'str', passwordHash: 'str' });
+
 export const Settings = new Table('settings', {
   key: 'str', layout: 'str', fxLevel: 'str', fxStyle: 'str', storeName: 'str', whatsapp: 'str', heroTitle: 'str', heroSubtitle: 'str',
   instagram: 'str', email: 'str', address: 'str', aboutText: 'str',

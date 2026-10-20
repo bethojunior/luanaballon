@@ -4,13 +4,21 @@ import Link from 'next/link';
 import { useCart } from './CartProvider';
 import type { ThemeDef } from '@/lib/themes';
 
+function AccountLink({ user }: { user?: { name: string } | null }) {
+  return (
+    <Link href={user ? '/conta' : '/entrar'} className="whitespace-nowrap py-1 font-bold hover:text-pink">
+      👤 {user ? user.name.split(' ')[0] : 'Entrar'}
+    </Link>
+  );
+}
+
 const links = [
   { href: '/', label: 'Início' },
   { href: '/produtos', label: 'Produtos' },
   { href: '/blog', label: 'Blog' },
 ];
 
-export default function Header({ name, theme: def }: { name: string; theme: ThemeDef }) {
+export default function Header({ name, theme: def, user }: { name: string; theme: ThemeDef; user?: { name: string } | null }) {
   const { count } = useCart();
   const theme = def.base;
 
@@ -23,6 +31,7 @@ export default function Header({ name, theme: def }: { name: string; theme: Them
             {links.map((l) => (
               <Link key={l.href} href={l.href} className="py-1 hover:text-pink">{l.label}</Link>
             ))}
+            <AccountLink user={user} />
             <Link href="/carrinho" className="py-1 hover:text-pink">Carrinho{count > 0 && ` (${count})`}</Link>
           </nav>
         </div>
@@ -42,6 +51,7 @@ export default function Header({ name, theme: def }: { name: string; theme: Them
             {links.map((l) => (
               <Link key={l.href} href={l.href} className="rounded-full px-3 py-1.5 text-sm font-bold hover:bg-aqua-soft sm:text-base">{l.label}</Link>
             ))}
+            <AccountLink user={user} />
             <Link href="/carrinho" className="btn-primary btn-sm" aria-label="Carrinho">
               🧸{count > 0 && <span className="rounded-full bg-sun px-1.5 text-xs font-extrabold text-ink">{count}</span>}
             </Link>
@@ -62,6 +72,7 @@ export default function Header({ name, theme: def }: { name: string; theme: Them
             {links.slice(1).map((l) => (
               <Link key={l.href} href={l.href} className="hover:text-pink hover:[text-shadow:0_0_12px_rgb(var(--pink))]">{l.label}</Link>
             ))}
+            <AccountLink user={user} />
             <Link href="/carrinho" className="rounded border border-pink px-3 py-1.5 text-pink hover:bg-pink hover:text-white">
               Carrinho ({count})
             </Link>
@@ -80,6 +91,7 @@ export default function Header({ name, theme: def }: { name: string; theme: Them
             {links.slice(1).map((l) => (
               <Link key={l.href} href={l.href} className="hover:underline">{l.label}</Link>
             ))}
+            <AccountLink user={user} />
             <Link href="/carrinho" className="border border-ink px-3 py-1.5 hover:bg-ink hover:text-white">
               Carrinho ({count})
             </Link>
@@ -102,6 +114,7 @@ export default function Header({ name, theme: def }: { name: string; theme: Them
               {l.label}
             </Link>
           ))}
+          <AccountLink user={user} />
           <Link href="/carrinho" className="btn-primary btn-sm relative" aria-label="Carrinho">
             🛒
             {count > 0 && (

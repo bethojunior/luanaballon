@@ -54,8 +54,8 @@ services:
     volumes:
       - minio_data:/bitnami/minio/data
     ports:
-      # console do MinIO apenas via localhost (acesse com túnel SSH: ssh -L 8501:localhost:8501 root@SEU_IP)
-      - "127.0.0.1:8501:9001"
+      # console do MinIO apenas via localhost (acesse com túnel SSH: ssh -L 8591:localhost:8591 root@SEU_IP)
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-8591}:9001"
     networks: [internal]
 
 networks:

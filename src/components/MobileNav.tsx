@@ -12,16 +12,17 @@ const tabs = [
 ];
 
 /** Barra de navegação fixa no rodapé, só no celular. */
-export default function MobileNav() {
+export default function MobileNav({ user }: { user?: { name: string } | null }) {
   const path = usePathname();
   const { count } = useCart();
+  const all = [...tabs, user ? { href: '/conta', label: 'Conta', icon: '👤' } : { href: '/entrar', label: 'Entrar', icon: '👤' }];
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-6px_20px_-12px_rgb(0_0_0/0.35)] backdrop-blur md:hidden"
       aria-label="Navegação principal"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-4">
-        {tabs.map((t) => {
+      <ul className="mx-auto grid max-w-md grid-cols-5">
+        {all.map((t) => {
           const active = t.href === '/' ? path === '/' : path.startsWith(t.href);
           return (
             <li key={t.href}>
