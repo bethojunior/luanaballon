@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from './CartProvider';
+import { burst } from '@/lib/burst';
 
 type P = { id: string; slug: string; name: string; price: number; image?: string };
 
@@ -12,7 +13,8 @@ export function AddToCartButton({ product, small }: { product: P; small?: boolea
   return (
     <button
       className={`btn-primary ${small ? 'btn-sm w-full sm:w-auto' : ''}`}
-      onClick={() => {
+      onClick={(e) => {
+        burst(e.currentTarget);
         add(product);
         setDone(true);
         setTimeout(() => setDone(false), 1200);
@@ -42,7 +44,8 @@ export function BuyBox({ product, whatsapp }: { product: P; whatsapp: string }) 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <button
           className="btn-primary"
-          onClick={() => {
+          onClick={(e) => {
+            burst(e.currentTarget);
             add(product, qty);
             setDone(true);
           }}

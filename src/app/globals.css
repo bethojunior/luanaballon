@@ -259,3 +259,48 @@
 .prose-luana a { @apply font-bold text-pink underline; }
 .prose-luana img { @apply my-6 rounded-2xl; }
 .prose-luana blockquote { @apply my-4 border-l-4 border-sun pl-4 italic; }
+
+/* ============ ANIMAÇÕES DE FUNDO (components/FX.tsx) ============ */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fx { position: absolute; left: var(--x); font-size: var(--size); line-height: 1; will-change: transform; }
+.fx-in { display: block; }
+.fx-in i { display: block; width: 1em; height: 0.6em; background: var(--c); }
+
+.fx-rise { bottom: -20vh; animation: fx-rise var(--dur) linear var(--delay) infinite; opacity: 0.85; }
+.fx-rise .fx-in { animation: fx-sway calc(var(--dur) / 3) ease-in-out var(--delay) infinite alternate; }
+.fx-fall { top: -10vh; animation: fx-fall var(--dur) linear var(--delay) infinite; opacity: 0.9; }
+.fx-fall .fx-in { animation: fx-spin calc(var(--dur) / 4) ease-in-out var(--delay) infinite alternate; }
+.fx-twinkle { top: var(--y); animation: fx-twinkle calc(var(--dur) / 4) ease-in-out var(--delay) infinite; }
+.fx-fly { top: var(--y); left: -10vw; animation: fx-fly var(--dur) linear var(--delay) infinite; }
+.fx-fly .fx-in { animation: fx-flap 0.9s ease-in-out infinite alternate; }
+
+@keyframes fx-rise { from { transform: translateY(0); } to { transform: translateY(-135vh); } }
+@keyframes fx-fall { from { transform: translateY(0); } to { transform: translateY(125vh); } }
+@keyframes fx-sway { from { transform: translateX(calc(var(--sway) * -1)) rotate(-6deg); } to { transform: translateX(var(--sway)) rotate(6deg); } }
+@keyframes fx-spin { from { transform: translateX(calc(var(--sway) * -1)) rotate(var(--rot)); } to { transform: translateX(var(--sway)) rotate(calc(var(--rot) + 200deg)); } }
+@keyframes fx-twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(25deg); } }
+@keyframes fx-fly { from { transform: translateX(0); } to { transform: translateX(120vw); } }
+@keyframes fx-flap { from { transform: translateY(-8px) scaleY(1); } to { transform: translateY(8px) scaleY(0.7); } }
+
+/* entrada suave das seções */
+@keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+main > * { animation: fade-up 0.6s ease both; }
+.card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+
+/* explosão de confete ao adicionar ao carrinho */
+.fx-burst { position: fixed; z-index: 60; width: 8px; height: 8px; pointer-events: none; animation: fx-burst 0.8s ease-out forwards; }
+@keyframes fx-burst {
+  from { transform: translate(0, 0) rotate(0); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) rotate(540deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-layer, .fx-burst { display: none; }
+  main > *, .floaty { animation: none; }
+}

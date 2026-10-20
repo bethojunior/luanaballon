@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { EVENTS, type Base } from './themeData';
+import { EVENT_FX } from './fx';
 
 export type ThemeDef = {
   id: string;
@@ -17,6 +18,8 @@ export type ThemeDef = {
   ink: string;
   cream: string;
   dark: boolean;
+  /** animação de fundo extra deste layout (veja MOTIFS em fx.ts) */
+  fx: string;
   /** layouts gerais usam as cores definidas no CSS; os demais aplicam a paleta inline */
   custom: boolean;
 };
@@ -29,6 +32,8 @@ const BASE_DESC: Record<Base, string> = {
   noite: 'Brilho neon: fundo escuro, destaques luminosos e visual de balada.',
 };
 
+const GENERAL_FX: Record<string, string> = { festa: 'confetti', elegante: 'sparkles', minimo: 'confetti', baby: 'stars', noite: 'sparkles' };
+
 /** Layouts gerais (os cinco originais). Mantêm os números 1 a 5 da flag. */
 const GENERAL: ThemeDef[] = [
   { id: 'festa', name: 'Festa', base: 'festa', emoji: '🎈', badge: 'Festa pronta, é só pedir!', words: [], swatches: ['#FF3D8B', '#FFC83D', '#18C5C0', '#7B4DFF'], ink: '#2B1B3D', cream: '#FFFAF2', dark: false },
@@ -36,7 +41,7 @@ const GENERAL: ThemeDef[] = [
   { id: 'minimo', name: 'Minimalista', base: 'minimo', emoji: '🎈', badge: 'Loja de festas', words: ['Balões', 'Arcos', 'Painéis', 'Kits de festa', 'Decoração', 'Personalizados'], swatches: ['#111111', '#D4FF3F', '#00968C', '#5050F0'], ink: '#111111', cream: '#FFFFFF', dark: false },
   { id: 'baby', name: 'Baby & Pastel', base: 'baby', emoji: '☁️', badge: 'Chá de bebê · Mesversário · Infantil', words: [], swatches: ['#E878A0', '#FFE082', '#8ECDE2', '#BEA5E8'], ink: '#544766', cream: '#FFFBF7', dark: false },
   { id: 'noite', name: 'Noite & Neon', base: 'noite', emoji: '🎈', badge: 'Decoração para a noite toda', words: ['Aniversários', 'Formaturas', '15 anos', 'Réveillon', 'Eventos', 'Balada'], swatches: ['#FF2E97', '#FFD60A', '#00E5FF', '#A06CFF'], ink: '#EEE8FF', cream: '#0E0A1C', dark: true },
-].map((t) => ({ ...t, group: 'Geral', description: BASE_DESC[t.base as Base], custom: false }) as ThemeDef);
+].map((t) => ({ ...t, group: 'Geral', description: BASE_DESC[t.base as Base], custom: false, fx: GENERAL_FX[t.id] }) as ThemeDef);
 
 const BY_EVENT: ThemeDef[] = EVENTS.flatMap((e) =>
   e.models.map(([label, base, swatches, ink, cream, dark], i) => ({
@@ -52,6 +57,7 @@ const BY_EVENT: ThemeDef[] = EVENTS.flatMap((e) =>
     ink,
     cream,
     dark: !!dark,
+    fx: EVENT_FX[e.slug] ?? 'confetti',
     custom: true,
   })),
 );

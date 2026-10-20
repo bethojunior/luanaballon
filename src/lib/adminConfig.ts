@@ -1,12 +1,14 @@
 import { brl } from './utils';
+import { FX_LEVELS, FX_STYLE_OPTIONS } from './fx';
 
 export type Field = {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'markdown' | 'number' | 'boolean' | 'image' | 'images' | 'category' | 'theme';
+  type: 'text' | 'textarea' | 'markdown' | 'number' | 'boolean' | 'image' | 'images' | 'category' | 'theme' | 'select';
   help?: string;
   required?: boolean;
   half?: boolean;
+  options?: { value: string; label: string }[];
 };
 
 export type ResourceConfig = {
@@ -94,5 +96,7 @@ export const SEO_FIELDS: Field[] = [
 ];
 
 export const APPEARANCE_FIELDS: Field[] = [
+  { key: 'fxLevel', label: 'Animações do site (balões, confete…)', type: 'select', options: FX_LEVELS, help: 'Quantidade de balões e enfeites animados ao fundo. Em celulares a quantidade é reduzida automaticamente.', half: true },
+  { key: 'fxStyle', label: 'Tipo de animação', type: 'select', options: FX_STYLE_OPTIONS, help: 'No automático, cada layout usa o enfeite do seu evento (ex.: neve no Natal, corações no Dia dos Namorados).', half: true },
   { key: 'layout', label: 'Layout do site', type: 'theme', help: 'Escolha qual layout fica ativo na loja. A mudança vale assim que você salvar.' },
 ];

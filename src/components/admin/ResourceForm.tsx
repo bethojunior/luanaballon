@@ -101,6 +101,11 @@ export default function ResourceForm({ fields, saveUrl, method, loadUrl, backHre
               {cats.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
             </select>
           )}
+          {f.type === 'select' && (
+            <select className="input" value={data[f.key] ?? f.options?.[0]?.value ?? ''} onChange={(e) => set(f.key, e.target.value)}>
+              {f.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+          )}
           {f.type === 'theme' && <ThemePicker value={data[f.key] || 'festa'} onChange={(v) => set(f.key, v)} />}
           {f.type === 'image' && <ImageUploader value={data[f.key] ? [data[f.key]] : []} onChange={(v) => set(f.key, v[0] ?? '')} />}
           {f.type === 'images' && <ImageUploader multiple value={data[f.key] ?? []} onChange={(v) => set(f.key, v)} />}

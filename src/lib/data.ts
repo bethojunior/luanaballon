@@ -4,6 +4,8 @@ import { plain } from './utils';
 
 export const SETTINGS_DEFAULTS = {
   layout: 'festa',
+  fxLevel: 'media',
+  fxStyle: 'auto',
   storeName: 'Luana Balões',
   whatsapp: '5511999999999',
   heroTitle: 'Sua festa fica mais colorida com a Luana Balões!',

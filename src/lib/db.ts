@@ -60,6 +60,8 @@ const SCHEMA = [
 
 /** Colunas adicionadas depois da criação inicial das tabelas (também aplicadas em bancos já existentes). */
 const COLUMNS: [table: string, column: string, ddl: string][] = [
+  ['settings', 'fxLevel', 'VARCHAR(16) NULL'],
+  ['settings', 'fxStyle', 'VARCHAR(24) NULL'],
   ['settings', 'siteUrl', 'VARCHAR(255) NULL'],
   ['settings', 'seoTitle', 'VARCHAR(255) NULL'],
   ['settings', 'seoDescription', 'TEXT NULL'],
